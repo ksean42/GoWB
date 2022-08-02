@@ -1,0 +1,2 @@
+migrate create -ext sql  -dir migrations create_orders;
+migrate -path migrations -database "postgres://localhost/gowb?sslmode=disable" up;
