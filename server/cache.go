@@ -2,9 +2,21 @@ package server
 
 import (
 	_ "fmt"
-	"github.com/ksean42/GoWB/model"
 	"log"
+
+	"github.com/ksean42/GoWB/model"
 )
+
+type Cache struct {
+	Orders map[string]model.Order
+}
+
+func InitCache(db Database) *Cache {
+	cache := &Cache{
+		Orders: RestoreCache(db),
+	}
+	return cache
+}
 
 func RestoreCache(db Database) map[string]model.Order {
 	Orders := make(map[string]model.Order)
