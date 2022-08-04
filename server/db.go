@@ -2,14 +2,14 @@ package server
 
 import (
 	"database/sql"
-	"encoding/json"
+	// "encoding/json"
 	"errors"
 	"fmt"
-	"log"
-
+	"github.com/go-playground/validator/v10"
 	"github.com/jmoiron/sqlx"
 	"github.com/ksean42/GoWB/model"
 	_ "github.com/lib/pq"
+	"log"
 )
 
 const (
@@ -38,8 +38,10 @@ func (d *Database) DBInit() {
 }
 
 func (d *Database) Create(order model.Order) error {
-	js, _ := json.Marshal(order)
-	_, err := d.DB.Exec("INSERT INTO orders VALUES ($1, $2);", order.OrderUid, js)
+	if nonvalid := validate(order); nonvalid != nil {
+		return errors.New("Order is not valid")
+	}
+	_, err := d.DB.Exec("INSERT INTO orders VALUES ($1, $2);", order.OrderUid, order)
 	if err != nil {
 		return errors.New("Order already exists")
 	}
@@ -59,6 +61,16 @@ func (d *Database) GetAll() (*sql.Rows, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+func validate(order model.Order) error {
+	validate := validator.New()
+	err := validate.Struct(order)
+	if err != nil {
+		fmt.Println(err)
+		return (err)
+	}
+	return nil
 }
 
 func (d *Database) CloseDb() {
