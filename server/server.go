@@ -31,7 +31,7 @@ func (s *Server) Start() {
 	router.GET("/getOrder/:id", s.getOrder)
 	router.GET("/getOrder/all", s.getAllOrders)
 	router.POST("/order", s.saveOrder)
-	router.Run("localhost:8111")
+	router.Run("localhost:8181")
 }
 
 func (s *Server) getOrder(c *gin.Context) {

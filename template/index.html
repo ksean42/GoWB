@@ -45,7 +45,7 @@
         <script>
             function getHandler() { 
                 var xhr = new XMLHttpRequest();
-                xhr.open('GET', "http://localhost:8111/getOrder/".concat(document.getElementById("input").value), true);
+                xhr.open('GET', "http://localhost:8181/getOrder/".concat(document.getElementById("input").value), true);
                 xhr.responseType = 'json';
                 xhr.onload = function() {
                     var div = document.getElementById("response");
@@ -55,7 +55,7 @@
            }
            function postHandler() { 
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', "http://localhost:8111/order", true);
+                xhr.open('POST', "http://localhost:8181/order", true);
                 var body = document.getElementById("input").value
                 xhr.onreadystatechange = function() {
                     if(xhr.readyState == XMLHttpRequest.DONE) {
