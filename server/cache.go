@@ -3,11 +3,13 @@ package server
 import (
 	_ "fmt"
 	"log"
+	"sync"
 
 	"github.com/ksean42/GoWB/model"
 )
 
 type Cache struct {
+	sync.Mutex
 	Orders map[string]model.Order
 }
 
@@ -35,5 +37,7 @@ func RestoreCache(db Database) *map[string]model.Order {
 }
 
 func (c *Cache) Save(order *model.Order) {
+	c.Lock()
+	defer c.Unlock()
 	c.Orders[order.OrderUid] = *order
 }
