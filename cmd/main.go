@@ -22,16 +22,23 @@ func main() {
 	defer nats.Close()
 
 	s := server.NewServer()
-	message := model.Order{}
-	nats.Subscribe("order", func(msg *stan.Msg) {
+	go nats.Subscribe("order", func(msg *stan.Msg) {
+		message := model.Order{}
 		err = json.Unmarshal(msg.Data, &message)
 		if err != nil {
 			log.Println("Data format is wrong")
 			return
 		}
-		if err := s.DB.Create(message); err != nil {
-			log.Println(err)
+		if err := server.Validate(&message); err != nil {
+			log.Println("Order is not valid")
+			return
 		}
+		if err := s.DB.Create(&message); err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println("Success")
+		s.Cache.Save(&message)
 	})
 	s.Start()
 }

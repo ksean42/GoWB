@@ -8,10 +8,6 @@ import (
 	_ "github.com/go-playground/validator/v10"
 )
 
-type Orders struct {
-	Orders []Order
-}
-
 type Order struct {
 	OrderUid          string    `json:"order_uid" validate:"required,alphanum"`
 	TrackNumber       string    `json:"track_number" validate:"required"`

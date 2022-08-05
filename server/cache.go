@@ -13,12 +13,12 @@ type Cache struct {
 
 func InitCache(db Database) *Cache {
 	cache := &Cache{
-		Orders: RestoreCache(db),
+		Orders: *RestoreCache(db),
 	}
 	return cache
 }
 
-func RestoreCache(db Database) map[string]model.Order {
+func RestoreCache(db Database) *map[string]model.Order {
 	Orders := make(map[string]model.Order)
 	rows, err := db.GetAll()
 	if err != nil {
@@ -31,5 +31,9 @@ func RestoreCache(db Database) map[string]model.Order {
 		rows.Scan(&uid, &order)
 		Orders[uid] = order
 	}
-	return Orders
+	return &Orders
+}
+
+func (c *Cache) Save(order *model.Order) {
+	c.Orders[order.OrderUid] = *order
 }

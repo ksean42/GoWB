@@ -1,7 +1,6 @@
 {
-    "order_uid": "TEST222222222222",
-    "track_number": "WBILMTESTTRACK",
-    "entry": "WBIL",
+    "order_uid": "TEST2222222222",
+    "entry": "1111111111111",
     "delivery": {
       "name": "Test Testov",
       "phone": "+9720000000",
@@ -14,7 +13,7 @@
     "payment": {
       "transaction": "b563feb7b2b84b6test",
       "request_id": "",
-      "currency": "RUB",
+      "currency": "USD",
       "provider": "wbpay",
       "amount": 1817,
       "payment_dt": 1637907727,

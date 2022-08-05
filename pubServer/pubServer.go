@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 
 	"github.com/nats-io/stan.go"
 )
@@ -24,16 +25,35 @@ func main() {
 	fmt.Println("Enter json filename to publish")
 	for {
 		input, _, err := reader.ReadLine()
+		str := string(input)
 		if err != nil {
 			log.Println(err)
 		}
-		if string(input) == "exit" {
+		if str == "exit" {
 			s.Close()
 			os.Exit(0)
 		}
-		publish(string(input), s)
+		if str == "all" {
+			publishAll(s)
+			continue
+		}
+		publish(str, s)
 	}
 
+}
+
+func publishAll(s stan.Conn) {
+	files, err := ioutil.ReadDir("jsonTest/")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, file := range files {
+		fmt.Println(file.Name())
+		if !file.IsDir() {
+			publish(file.Name(), s)
+			time.Sleep(time.Second * 2)
+		}
+	}
 }
 
 func publish(filename string, s stan.Conn) {

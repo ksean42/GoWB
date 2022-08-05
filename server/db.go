@@ -2,14 +2,16 @@ package server
 
 import (
 	"database/sql"
-	// "encoding/json"
+	"encoding/json"
 	"errors"
+
 	"fmt"
+	"log"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/jmoiron/sqlx"
 	"github.com/ksean42/GoWB/model"
 	_ "github.com/lib/pq"
-	"log"
 )
 
 const (
@@ -37,23 +39,21 @@ func (d *Database) DBInit() {
 	d.DB = db
 }
 
-func (d *Database) Create(order model.Order) error {
-	if nonvalid := validate(order); nonvalid != nil {
-		return errors.New("Order is not valid")
-	}
-	_, err := d.DB.Exec("INSERT INTO orders VALUES ($1, $2);", order.OrderUid, order)
+func (d *Database) Create(order *model.Order) error {
+	byteOrder, _ := json.Marshal(order)
+	_, err := d.DB.Exec("INSERT INTO orders VALUES ($1, $2);", order.OrderUid, byteOrder)
 	if err != nil {
 		return errors.New("Order already exists")
 	}
 	return nil
 }
-func (d *Database) Get(order_uid string) (model.Order, error) {
+func (d *Database) Get(order_uid *string) (*model.Order, error) {
 	var res model.Order
 	err := d.DB.QueryRow("SELECT json_data FROM orders WHERE order_uid=$1", order_uid).Scan(&res)
 	if err != nil {
-		return model.Order{}, err
+		return nil, err
 	}
-	return res, nil
+	return &res, nil
 }
 func (d *Database) GetAll() (*sql.Rows, error) {
 	res, err := d.DB.Query("SELECT * FROM orders")
@@ -63,16 +63,15 @@ func (d *Database) GetAll() (*sql.Rows, error) {
 	return res, nil
 }
 
-func validate(order model.Order) error {
+func (d *Database) CloseDb() {
+	d.DB.Close()
+}
+
+func Validate(order *model.Order) error {
 	validate := validator.New()
 	err := validate.Struct(order)
 	if err != nil {
-		fmt.Println(err)
 		return (err)
 	}
 	return nil
-}
-
-func (d *Database) CloseDb() {
-	d.DB.Close()
 }
